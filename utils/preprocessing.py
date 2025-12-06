@@ -28,3 +28,13 @@ def preprocess(df):
     df["label"] = df["label"].map({"P": 1, "N": 0})
 
     return df
+
+
+def encode_transformer(tokenizer, texts, max_len=64):
+    return tokenizer(
+        list(texts),
+        padding=True,
+        truncation=True,
+        max_length=max_len,
+        return_tensors="tf"
+    )

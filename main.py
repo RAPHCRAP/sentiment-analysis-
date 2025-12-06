@@ -1,5 +1,7 @@
+# main.py
 from utils.preprocessing import *
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
@@ -7,11 +9,14 @@ from models.rnn import build_rnn
 from models.gru import build_gru
 from models.lstm import build_lstm
 from models.bilstm import build_bilstm
+from models.bert import load_mbert, predict_mbert
+from models.xlmroberta import load_xlm_roberta, predict_xlm
+
+import torch
 
 # -----------------------
 # 1. Load & preprocess data
 # -----------------------
-
 df = load_dataset("data/urdu-sentiment-corpus.tsv")
 df = preprocess(df)
 
@@ -20,9 +25,8 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 # -----------------------
-# 2. Tokenizer
+# 2. Tokenizer for RNN-based models
 # -----------------------
-
 tokenizer = Tokenizer()
 tokenizer.fit_on_texts(X_train)
 
@@ -33,10 +37,9 @@ X_train_seq = pad_sequences(tokenizer.texts_to_sequences(X_train), maxlen=max_le
 X_test_seq  = pad_sequences(tokenizer.texts_to_sequences(X_test), maxlen=max_len)
 
 # -----------------------
-# 3. Build models
+# 3. Build Keras models
 # -----------------------
-
-models = {
+models_keras = {
     "RNN": build_rnn(vocab_size, max_len),
     "GRU": build_gru(vocab_size, max_len),
     "LSTM": build_lstm(vocab_size, max_len),
@@ -44,12 +47,11 @@ models = {
 }
 
 # -----------------------
-# 4. Train & evaluate
+# 4. Train & evaluate Keras models
 # -----------------------
-
 results = {}
 
-for name, model in models.items():
+for name, model in models_keras.items():
     print(f"\nTraining {name} Model...")
     model.fit(
         X_train_seq, y_train,
@@ -58,9 +60,42 @@ for name, model in models.items():
         batch_size=32,
         verbose=1
     )
-
     loss, acc = model.evaluate(X_test_seq, y_test)
-    results[name] = acc
+    results[name] = {
+        "accuracy": acc
+    }
 
+# -----------------------
+# 5. mBERT
+# -----------------------
+print("\nRunning mBERT...")
+tok_mbert, mbert_model = load_mbert()
+mbert_preds = predict_mbert(tok_mbert, mbert_model, X_test)
+results["mBERT"] = {
+    "accuracy": accuracy_score(y_test, mbert_preds),
+    "precision": precision_score(y_test, mbert_preds, average="binary"),
+    "recall": recall_score(y_test, mbert_preds, average="binary"),
+    "f1": f1_score(y_test, mbert_preds, average="binary")
+}
+
+# -----------------------
+# 6. XLM-RoBERTa
+# -----------------------
+print("\nRunning XLM-RoBERTa...")
+tok_xlm, xlm_model = load_xlm_roberta()
+xlm_preds = predict_xlm(tok_xlm, xlm_model, X_test)
+results["XLM-RoBERTa"] = {
+    "accuracy": accuracy_score(y_test, xlm_preds),
+    "precision": precision_score(y_test, xlm_preds, average="binary"),
+    "recall": recall_score(y_test, xlm_preds, average="binary"),
+    "f1": f1_score(y_test, xlm_preds, average="binary")
+}
+
+# -----------------------
+# 7. Print final results
+# -----------------------
 print("\nFinal Results:")
-print(results)
+for model_name, metrics in results.items():
+    print(f"\n{model_name}:")
+    for k, v in metrics.items():
+        print(f"{k}: {v:.4f}")
