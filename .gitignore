@@ -20,100 +20,105 @@ wheels/
 .installed.codes
 *.egg
 MANIFEST
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+*.mo
+*.pot
 
-# ========== ML/DL SPECIFIC ==========
-# Training results - IGNORE ALL (these are huge!)
-
-
-# Checkpoint files (anywhere)
-*.safetensors
-*.pt
-*.pth
-*.bin
-*.pkl
-*.pickle
-*.h5
-*.hdf5
-*.ckpt
-*.joblib
-
-# TensorBoard/ML logs
-runs/
-logs/
-*.tfevents.*
-events.out.tfevents.*
-lightning_logs/
-
-# Jupyter
-.ipynb_checkpoints/
-*.ipynb
-
-
-# Keras/TensorFlow
-.keras/
+# ========== ML/DL MODELS & EMBEDDINGS ==========
+# ALL model files (globally)
 *.keras
 *.h5
 *.hdf5
 *.pb
-
-# PyTorch
+*.tflite
+*.lite
+*.safetensors
 *.pt
 *.pth
 *.bin
-*.safetensors
 *.ckpt
-
-# TensorBoard
-*.tfevents.*
-events.out.tfevents.*
-
-# Checkpoints
-checkpoint*
-*.index
-*.data-*
-model.ckpt*
-/variables/
-
-# ONNX
+*.joblib
+*.pkl
+*.pickle
 *.onnx
 *.ort
-
-# JAX
 *.msgpack
-
-
-# Ignore ALL contents of saved_models
-saved_models/**/*
-# But keep empty directories
-!saved_models/**/.gitkeep
-
-# Also ignore by file extension (globally)
-*.keras
-*.safetensors
 *.model
 *.npy
-*.bin
+*.npz
 *.vec
-*.pt
-*.pth
+*.emb
+*.embedding
 
-# ========== DATA FILES ==========
-# Dataset files (usually large)
-data/*.tsv
-data/*.csv
-data/*.json
-data/*.jsonl
-data/*.parquet
-data/*.feather
-data/*.arrow
+# Complete exclusion of saved_models directory
+saved_models/
+# But allow README files if you want documentation
+!saved_models/README*
+!saved_models/*.md
+!saved_models/*.txt
 
-# Cache files
+# ========== DATASETS & LARGE FILES ==========
+# Data directory contents (except lightweight files)
+data/*.txt
+!data/__init__.py
+!data/README*
+!data/*.md
+
+# Cache and temporary data
 .cache/
-.cache/
-__pycache__/
+.cache/*
+*.cache
+*.tmp
+*.temp
+*~
+*.bak
+
+# ========== TENSORBOARD & LOGS ==========
+logs/
+runs/
+*.tfevents.*
+events.out.tfevents.*
+lightning_logs/
+mlruns/
+wandb/
+.vscode/
+
+# ========== JUPYTER NOTEBOOKS ==========
+.ipynb_checkpoints/
+*.ipynb
+*.ipynb_checkpoints
+
+# ========== IDE & EDITOR ==========
+.idea/
+.vscode/
+*.swp
+*.swo
+*.sublime-*
+*.code-workspace
+
+# ========== OS SPECIFIC ==========
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
 
 # ========== ENVIRONMENT ==========
-# Virtual environments
 .env
 .venv
 env/
@@ -122,39 +127,80 @@ ENV/
 env.bak/
 venv.bak/
 pythonenv*
+pip-selfcheck.json
+Pipfile
+Pipfile.lock
+poetry.lock
+pyproject.toml
+requirements*.txt
 
-# Environment variables
-.env
-.env.local
-.env.development
-.env.production
+# ========== COMPILED FILES ==========
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+*.pyc
 
-# ========== IDE & EDITOR ==========
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.DS_Store
-Thumbs.db
+# ========== PACKAGING ==========
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+*.tgz
 
-# ========== OS ==========
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
+# ========== DOCUMENTATION ==========
+_site/
+.sass-cache/
+.jekyll-cache/
+.jekyll-metadata
 
-# ========== LOGS ==========
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# ========== TESTING ==========
+test_results/
+test_output/
+*.test
+*.test.out
+.pytest_cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
 
-# ========== TEMPORARY ==========
-*.tmp
-*.temp
-*~
-*.bak
+# ========== SPECIFIC EXCLUSIONS ==========
+# GloVe embeddings
+glove.*
+# FastText models
+*.ftz
+*.ftm
+# Word2Vec models
+*.w2v
+*.word2vec
+# BERT/RoBERTa models
+*.json  # config/tokenizer files
+*.model  # sentencepiece
+spiece.model
+*.vocab
+vocab.*
+merges.txt
+special_tokens_map.json
+tokenizer_config.json
+config.json
+pytorch_model.bin
+tf_model.h5
+
+# ========== CUSTOM PATHS ==========
+# Training checkpoints (anywhere)
+checkpoint*/
+checkpoint-*/
+checkpoint.*
+training_args.bin
+optimizer.pt
+scheduler.pt
+trainer_state.json
+
+# Gradient accumulation
+gradient_accumulation/

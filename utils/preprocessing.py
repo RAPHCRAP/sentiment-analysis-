@@ -38,3 +38,31 @@ def encode_transformer(tokenizer, texts, max_len=64):
         max_length=max_len,
         return_tensors="tf"
     )
+
+
+def load_urdu_english_parallel_corpus(urdu_path, english_path, limit=None):
+    """
+    Loads a parallel Urdu-English corpus from two aligned text files.
+    Each line in urdu_path must correspond to the same line number in english_path.
+    """
+    urdu_lines = []
+    english_lines = []
+
+    with open(urdu_path, "r", encoding="utf-8") as f_ur:
+        urdu_lines = f_ur.read().strip().split("\n")
+
+    with open(english_path, "r", encoding="utf-8") as f_en:
+        english_lines = f_en.read().strip().split("\n")
+
+    # Safety check: ensure equal sizes
+    min_len = min(len(urdu_lines), len(english_lines))
+    urdu_lines = urdu_lines[:min_len]
+    english_lines = english_lines[:min_len]
+
+    if limit:
+        urdu_lines = urdu_lines[:limit]
+        english_lines = english_lines[:limit]
+
+    print(f"[INFO] Loaded {len(urdu_lines)} parallel sentences.")
+
+    return urdu_lines, english_lines
