@@ -90,7 +90,7 @@ def create_embedding_matrix(tokenizer, word_vectors, embed_size=100):
 embedding_matrices = {
     "Word2Vec": create_embedding_matrix(tokenizer, w2v_model.wv),
     "FastText": create_embedding_matrix(tokenizer, ft_model.wv),
-    "GloVe": create_embedding_matrix(tokenizer, glove_model.wv)
+    "GloVe": create_embedding_matrix(tokenizer, glove_model)
 }
 
 # -----------------------
