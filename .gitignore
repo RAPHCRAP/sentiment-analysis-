@@ -23,10 +23,7 @@ MANIFEST
 
 # ========== ML/DL SPECIFIC ==========
 # Training results - IGNORE ALL (these are huge!)
-bert_results/
-# Or if you want empty folder structure:
-# bert_results/*
-# !bert_results/.gitkeep
+
 
 # Checkpoint files (anywhere)
 *.safetensors
@@ -51,11 +48,6 @@ lightning_logs/
 .ipynb_checkpoints/
 *.ipynb
 
-# Training results
-bert_results/
-runs/
-logs/
-lightning_logs/
 
 # Keras/TensorFlow
 .keras/
@@ -82,16 +74,28 @@ checkpoint*
 model.ckpt*
 /variables/
 
-# Saved models
-saved_model/
-saved_model.pb
-
 # ONNX
 *.onnx
 *.ort
 
 # JAX
 *.msgpack
+
+
+# Ignore ALL contents of saved_models
+saved_models/**/*
+# But keep empty directories
+!saved_models/**/.gitkeep
+
+# Also ignore by file extension (globally)
+*.keras
+*.safetensors
+*.model
+*.npy
+*.bin
+*.vec
+*.pt
+*.pth
 
 # ========== DATA FILES ==========
 # Dataset files (usually large)

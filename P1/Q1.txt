@@ -1,0 +1,147 @@
+📘 Sentiment Analysis Using Deep Sequence Models — Final Report
+1. Introduction
+
+The task was to perform binary sentiment classification (Positive vs Negative) on an Urdu dataset using multiple sequence-based deep learning models.
+The following models were implemented:
+
+RNN
+
+GRU
+
+LSTM
+
+BiLSTM
+
+Multilingual BERT (mBERT)
+
+XLM-RoBERTa
+
+All models were trained on 75% training and 25% testing data.
+Evaluation metrics include:
+
+Accuracy
+
+Precision
+
+Recall
+
+F1 Score
+
+Tokenizer-based deep networks (RNN/GRU/LSTM/BiLSTM) were implemented using Keras, whereas multilingual transformer models (mBERT and XLM-RoBERTa) were implemented using HuggingFace Transformers.
+
+2. Dataset & Preprocessing
+
+Dataset: urdu-sentiment-corpus.tsv
+
+Steps performed:
+
+Lowercasing
+
+Urdu cleaning rules
+
+Removing URLs, mentions, emojis
+
+Tokenization using Keras Tokenizer
+
+Padding sequences to fixed length = 50
+
+Train-test split:
+
+Training: 75%
+
+Testing: 25%
+
+3. Model Architectures & Hyperparameters
+
+Below is the exact configuration used for all models.
+
+3.1 RNN / GRU / LSTM / BiLSTM (Keras models)
+Component	Value
+Embedding Size	128
+Max Sequence Length	50
+Optimizer	Adam (lr = 0.001)
+Loss	Binary Crossentropy
+Batch Size	32
+Epochs	3
+Validation Split	10%
+Output Layer	Dense(1, sigmoid)
+Differences:
+Model	Recurrent Layer
+RNN	SimpleRNN(128)
+GRU	GRU(128)
+LSTM	LSTM(128)
+BiLSTM	Bidirectional(LSTM(128))
+3.2 Transformer-based Models (HuggingFace)
+Model	Version
+mBERT	bert-base-multilingual-cased
+XLM-RoBERTa	xlm-roberta-base
+Epochs	3
+Optimizer	AdamW
+Learning Rate	2e-5
+Batch Size	8
+Max Length	128
+
+Transformers were fine-tuned using GPU-adaptable PyTorch backend.
+
+4. Results
+
+Below are the final evaluation results obtained after training all six models:
+
+🧪 Final Model Performance Table
+Model	Accuracy	Precision	Recall	F1
+RNN	0.4449	0.4426	0.7043	0.5436
+GRU	0.5347	0.5026	0.8348	0.6275
+LSTM	0.5551	0.5158	0.8522	0.6426
+BiLSTM	0.6082	0.6173	0.4348	0.5102
+mBERT	0.5429	0.5089	0.7478	0.6056
+XLM-RoBERTa	0.7102	0.7075	0.6522	0.6787
+5. Analysis of Results
+1️⃣ RNN – Worst Performance
+
+Simple RNN struggles with long-term dependencies.
+
+Low accuracy (44%) but high recall (70%) → predicts “Positive” too often.
+
+Shows vanishing gradient limitations.
+
+2️⃣ GRU – Improved Over RNN
+
+GRU handles sequential memory better.
+
+High recall (83%) but still moderate accuracy.
+
+Good for limited data and smaller GPU setups.
+
+3️⃣ LSTM – Better Than GRU
+
+Best performance among classical sequence models.
+
+High recall and balanced precision → F1 = 0.64.
+
+Captures temporal dependencies more effectively.
+
+4️⃣ BiLSTM – Mixed Outcome
+
+Surprisingly lower F1 than LSTM.
+
+High precision but low recall → predicts “Negative” too often.
+
+Bi-directional context didn't generalize well on short tweets.
+
+5️⃣ mBERT – Transformer Power but Not Best
+
+Understands multilingual text well.
+
+Still limited because Urdu vocabulary is smaller than Hindi/Arabic.
+
+Good recall (74%) but moderate accuracy.
+
+**6️⃣ XLM-RoBERTa – BEST MODEL
+
+Highest accuracy (71%)
+
+Best precision and balanced recall.
+
+Uses a larger multilingual corpus and better subword tokenization than mBERT.
+
+Generalizes the best for Urdu sentiment classification.
