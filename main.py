@@ -4,6 +4,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+import numpy as np
 
 from models.rnn import build_rnn
 from models.gru import build_gru
@@ -60,16 +61,27 @@ for name, model in models_keras.items():
         batch_size=32,
         verbose=1
     )
-    loss, acc = model.evaluate(X_test_seq, y_test)
+    
+    # Predict and convert probabilities to class labels
+    y_pred_prob = model.predict(X_test_seq)
+    if y_pred_prob.shape[1] == 1:  # sigmoid output
+        y_pred = (y_pred_prob > 0.5).astype(int).flatten()
+    else:  # softmax output
+        y_pred = y_pred_prob.argmax(axis=1)
+    
+    # Compute all metrics
     results[name] = {
-        "accuracy": acc
+        "accuracy": accuracy_score(y_test, y_pred),
+        "precision": precision_score(y_test, y_pred, average="binary"),
+        "recall": recall_score(y_test, y_pred, average="binary"),
+        "f1": f1_score(y_test, y_pred, average="binary")
     }
 
 # -----------------------
 # 5. mBERT
 # -----------------------
 print("\nRunning mBERT...")
-tok_mbert, mbert_model = load_mbert()
+tok_mbert, mbert_model = load_mbert(X_train, y_train, X_test, y_test, epochs=3)
 mbert_preds = predict_mbert(tok_mbert, mbert_model, X_test)
 results["mBERT"] = {
     "accuracy": accuracy_score(y_test, mbert_preds),
@@ -82,7 +94,7 @@ results["mBERT"] = {
 # 6. XLM-RoBERTa
 # -----------------------
 print("\nRunning XLM-RoBERTa...")
-tok_xlm, xlm_model = load_xlm_roberta()
+tok_xlm, xlm_model = load_xlm_roberta(X_train, y_train, X_test, y_test, epochs=3)
 xlm_preds = predict_xlm(tok_xlm, xlm_model, X_test)
 results["XLM-RoBERTa"] = {
     "accuracy": accuracy_score(y_test, xlm_preds),
