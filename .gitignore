@@ -51,6 +51,48 @@ lightning_logs/
 .ipynb_checkpoints/
 *.ipynb
 
+# Training results
+bert_results/
+runs/
+logs/
+lightning_logs/
+
+# Keras/TensorFlow
+.keras/
+*.keras
+*.h5
+*.hdf5
+*.pb
+
+# PyTorch
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.ckpt
+
+# TensorBoard
+*.tfevents.*
+events.out.tfevents.*
+
+# Checkpoints
+checkpoint*
+*.index
+*.data-*
+model.ckpt*
+/variables/
+
+# Saved models
+saved_model/
+saved_model.pb
+
+# ONNX
+*.onnx
+*.ort
+
+# JAX
+*.msgpack
+
 # ========== DATA FILES ==========
 # Dataset files (usually large)
 data/*.tsv
