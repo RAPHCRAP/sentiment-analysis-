@@ -16,9 +16,25 @@ class SentimentDataset(Dataset):
         item["labels"] = torch.tensor(self.labels[idx])
         return item
 
-def load_xlm_roberta(X_train=None, y_train=None, X_val=None, y_val=None, epochs=3):
+def load_xlm_roberta(X_train=None, y_train=None, X_val=None, y_val=None, epochs=3, load_saved=False):
+    model_path = "saved_models/xlm"
+
+    # --------------------------------
+    # 1. LOAD SAVED MODEL IF REQUESTED
+    # --------------------------------
+    if load_saved:
+        tokenizer = XLMRobertaTokenizer.from_pretrained(model_path)
+        model = XLMRobertaForSequenceClassification.from_pretrained(model_path)
+        return tokenizer, model
+
+    # --------------------------------
+    # 2. OTHERWISE TRAIN NEW MODEL
+    # --------------------------------
     tokenizer = XLMRobertaTokenizer.from_pretrained("xlm-roberta-base")
-    model = XLMRobertaForSequenceClassification.from_pretrained("xlm-roberta-base", num_labels=2)
+    model = XLMRobertaForSequenceClassification.from_pretrained(
+        "xlm-roberta-base",
+        num_labels=2
+    )
 
     if X_train is not None and y_train is not None:
         train_encodings = tokenizer(list(X_train), truncation=True, padding=True)
@@ -27,13 +43,12 @@ def load_xlm_roberta(X_train=None, y_train=None, X_val=None, y_val=None, epochs=
         train_dataset = SentimentDataset(train_encodings, list(y_train))
         val_dataset   = SentimentDataset(val_encodings, list(y_val))
 
-        # Training arguments
         training_args = TrainingArguments(
-            output_dir="./bert_results",
+            output_dir="./xlmr_results",
             num_train_epochs=epochs,
             per_device_train_batch_size=8,
             per_device_eval_batch_size=8,
-            eval_strategy="epoch",          # ← updated argument name
+            eval_strategy="epoch",
             save_strategy="epoch",
             logging_steps=10,
             learning_rate=2e-5,
@@ -50,6 +65,7 @@ def load_xlm_roberta(X_train=None, y_train=None, X_val=None, y_val=None, epochs=
         trainer.train()
 
     return tokenizer, model
+
 
 def predict_xlm(tokenizer, model, texts):
     model.eval()

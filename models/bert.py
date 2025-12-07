@@ -19,31 +19,44 @@ class SentimentDataset(Dataset):
         return item
 
 # Load and fine-tune mBERT
-def load_mbert(X_train=None, y_train=None, X_val=None, y_val=None, epochs=3):
+def load_mbert(X_train=None, y_train=None, X_val=None, y_val=None, epochs=3, load_saved=False):
+    model_path = "saved_models/mbert"
+
+    # --------------------------------
+    # 1. LOAD SAVED MODEL IF REQUESTED
+    # --------------------------------
+    if load_saved:
+        tokenizer = BertTokenizer.from_pretrained(model_path)
+        model = BertForSequenceClassification.from_pretrained(model_path)
+        return tokenizer, model
+
+    # --------------------------------
+    # 2. OTHERWISE TRAIN NEW MODEL
+    # --------------------------------
     tokenizer = BertTokenizer.from_pretrained("bert-base-multilingual-cased")
-    model = BertForSequenceClassification.from_pretrained("bert-base-multilingual-cased", num_labels=2)
+    model = BertForSequenceClassification.from_pretrained(
+        "bert-base-multilingual-cased",
+        num_labels=2
+    )
 
     if X_train is not None and y_train is not None:
-        # Encode datasets
         train_encodings = tokenizer(list(X_train), truncation=True, padding=True)
         val_encodings   = tokenizer(list(X_val), truncation=True, padding=True)
 
         train_dataset = SentimentDataset(train_encodings, list(y_train))
         val_dataset   = SentimentDataset(val_encodings, list(y_val))
 
-        # Training arguments
         training_args = TrainingArguments(
             output_dir="./bert_results",
             num_train_epochs=epochs,
             per_device_train_batch_size=8,
             per_device_eval_batch_size=8,
-            eval_strategy="epoch",          # ← updated argument name
+            eval_strategy="epoch",
             save_strategy="epoch",
             logging_steps=10,
             learning_rate=2e-5,
             disable_tqdm=False
         )
-
 
         trainer = Trainer(
             model=model,
